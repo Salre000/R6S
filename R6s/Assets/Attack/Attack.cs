@@ -17,7 +17,7 @@ public class Attack
     /// <summary>
     /// çUåÇÇÃëÆê´ÇÃID
     /// </summary>
-    protected int attributeID = -1;
+    protected AttackAttribute.attackAttribute  attributeID = AttackAttribute.attackAttribute.None;
 
     /// <summary>
     /// çUåÇÇ…égópÇ∑ÇÈçUåÇóÕ
@@ -45,16 +45,24 @@ public class Attack
     protected bool removeFlag = false;  
 
 
-    public virtual void UPDate() { if (removeFlag) Remove(); }
+    public virtual void Update() { if (removeFlag) Remove(); }
 
-    public virtual void Remove() { }
+    public virtual void Remove()
+    {
+
+    }
+
+
+    public virtual void HitAction(GameObject hitObject,Vector3 hitPos) { } 
+
+
     #region SetGet
 
 
     public void SetAttackID(int value) { attackID = value; }
     public int GetAttackID() { return attackID; }
-    public void SetAttributeID(int value) { attributeID = value; }
-    public int GetAttributeID() { return attributeID; }
+    public void SetAttributeID(AttackAttribute.attackAttribute value) { attributeID = value; }
+    public AttackAttribute.attackAttribute GetAttributeID() { return attributeID; }
     public void SetPower(int value) { power = value; }
     public int GetPower() { return power; }
     public void SetRanger(float value) { range = value; }

@@ -9,6 +9,11 @@ public class ObjectAttack : Attack
 {
     protected GameObject attackObject;
 
+    /// <summary>
+    /// Õ“ËŒŸ’m
+    /// </summary>
+    protected TriggerDetector triggerDetector;
+
 
     public void SetAttackObject(GameObject gameObject) {attackObject = gameObject;}
     public GameObject GetAttackObject() { return attackObject;}
