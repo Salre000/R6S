@@ -6,6 +6,8 @@ public class Test : MonoBehaviour
 {
     public GameObject barricade;
 
+    public BulletAttack.GunType gunType=BulletAttack.GunType.CSRX300;
+
 
     // Start is called before the first frame update
     void Start()
@@ -28,7 +30,7 @@ public class Test : MonoBehaviour
 
     private void Shot() 
     {
-        BulletAttack bulletAttack = new BulletAttack(Camera.main.transform.forward/100f, Camera.main.transform.position);
+        BulletAttack bulletAttack = new BulletAttack(Camera.main.transform.forward/100f, Camera.main.transform.position, gunType);
 
     }
 

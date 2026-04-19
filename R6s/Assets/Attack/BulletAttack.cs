@@ -10,8 +10,10 @@ public class BulletAttack : ObjectAttack
     readonly float MAX_TIME = 4;
 
 
+    GunType gunType = GunType.None;
 
-    public BulletAttack(Vector3 angle, Vector3 StartPos)
+
+    public BulletAttack(Vector3 angle, Vector3 StartPos, GunType gunType)
     {
         GameObject bullet = GameObject.Instantiate
             (
@@ -31,6 +33,7 @@ public class BulletAttack : ObjectAttack
         attackID = AttackObjectManager.instance.SetAttack(this);
 
         triggerDetector.SetHitAction(HitAction);
+        this.gunType = gunType;
 
     }
     public override void HitAction(GameObject hitObject, Vector3 hitPos)
@@ -63,7 +66,26 @@ public class BulletAttack : ObjectAttack
         GameObject.Destroy(attackObject);
     }
 
+    public enum GunType 
+    {
+        None=-1,
+        SMG,
+        LMG,
+        SG,
+        HG,
+        MP,
+        MR,
+        RB,
+        SR,
+        MAX,
+        DP27=11,
+        OTs03=17,
+        CSRX300 =27,
+    }
 
+    #region SetGet
+    public GunType GetGunType() { return gunType;}
+    #endregion
 
 
 }

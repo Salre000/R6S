@@ -58,8 +58,13 @@ public class Barricade : HitObject
 
         if (attack == null) return;
 
-        if(hitBarricadeParts.Contains(cash)) barricadeParts[cash].SetActive(false);
+        BulletAttack bulletAttack = attack as BulletAttack;
+
+
+        if (hitBarricadeParts.Contains(cash)||4 < (int)bulletAttack.GetGunType()) barricadeParts[cash].SetActive(false);
         hitBarricadeParts.Add(cash);
+
+        if (20 < (int)bulletAttack.GetGunType()) Break();
     }
 
     /// <summary>
