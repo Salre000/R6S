@@ -57,7 +57,7 @@ public class Test : MonoBehaviour
 
     private void Shot() 
     {
-        BulletAttack bulletAttack = new BulletAttack(Camera.main.transform.forward/100f, Camera.main.transform.position, gunType);
+        BulletAttack bulletAttack = new BulletAttack(Camera.main.transform.forward/50f, Camera.main.transform.position, gunType);
 
     }
 

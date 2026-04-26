@@ -13,6 +13,16 @@ public class Barricade : HitObject
 
     private List<int> hitBarricadeParts= new List<int>();
 
+    private int hp = 100;
+
+    private readonly int MAX_HP = 100;
+
+    private int hitCount = 0;
+
+    private readonly int MAX_HIT_COUNT = 20;
+
+    private readonly int MAX_HIDE_PARTS = 14;
+
 
     public Barricade(GameObject barricade) 
     {
@@ -64,8 +74,79 @@ public class Barricade : HitObject
         if (hitBarricadeParts.Contains(cash)||4 < (int)bulletAttack.GetGunType()) barricadeParts[cash].SetActive(false);
         hitBarricadeParts.Add(cash);
 
-        if (20 < (int)bulletAttack.GetGunType()) Break();
+        CheckHp(bulletAttack.GetGunType());
+
+        CheckPartsActive();
     }
+
+    /// <summary>
+    ///  バリケードのHpを確認する関数
+    /// </summary>
+    private void CheckHp(BulletAttack.GunType gunType) 
+    {
+        hitCount++;
+        if(hitCount>=MAX_HIT_COUNT) { Break();return;}
+
+        hp -= GunTypeDamage(gunType);
+
+        if (hp <= 0) Break();
+
+    }
+
+    private int GunTypeDamage(BulletAttack.GunType gunType) 
+    {
+        int Damage = 0;
+
+        switch (gunType)
+        {
+            case BulletAttack.GunType.SMG:
+                break;
+            case BulletAttack.GunType.DP27:
+            case BulletAttack.GunType.LMG:
+                break;
+            case BulletAttack.GunType.SG:
+                break;
+            case BulletAttack.GunType.HG:
+                break;
+            case BulletAttack.GunType.MP:
+                break;
+            case BulletAttack.GunType.MR:
+                Damage = 15;
+                break;
+            case BulletAttack.GunType.RB:
+                break;
+            case BulletAttack.GunType.SR:
+                Damage = 34;
+                break;
+            case BulletAttack.GunType.OTs03:
+                Damage = 34;
+                break;
+            case BulletAttack.GunType.CSRX300:
+                Damage = MAX_HP;
+                break;
+        }
+
+        return Damage;
+
+    }
+
+    private void CheckPartsActive() 
+    {
+        int hideObject = 0;
+
+        for (int i=0;i< barricadeParts.Count; i++) 
+        {
+            if (barricadeParts[i].activeSelf) continue;
+
+            hideObject++;
+
+
+        }
+
+        if(hideObject>=MAX_HIDE_PARTS) Break();
+    }
+
+
 
     /// <summary>
     /// バリケードの復活関数
@@ -76,6 +157,10 @@ public class Barricade : HitObject
         {
             barricadeParts[i].SetActive(true);
         }
+
+        hp = MAX_HP;
+        hitCount = 0;
+
         hitBarricadeParts.Clear();
     }
     public void Break() 
@@ -86,6 +171,7 @@ public class Barricade : HitObject
         }
         hitBarricadeParts.Clear();
     }
+
 
 
 
