@@ -23,6 +23,9 @@ public class Barricade : HitObject
 
     private readonly int MAX_HIDE_PARTS = 14;
 
+    private readonly int PARTS_WIDE=3;
+    private readonly int PARTS_HEIGHT =14;
+
 
     public Barricade(GameObject barricade) 
     {
@@ -41,7 +44,8 @@ public class Barricade : HitObject
         for(int i=0;i< barricadeParts.Count; i++) 
         {
             int cash = i;
-            barricadeParts[i].AddComponent<BoxCollider>().isTrigger=false;
+            BoxCollider box = barricadeParts[i].AddComponent<BoxCollider>();
+            box.isTrigger = true;
             barricadeParts[i].AddComponent<TriggerDetector>().SetHitAction
                 ((gameObject, Pos) => 
                 {
@@ -71,7 +75,12 @@ public class Barricade : HitObject
         BulletAttack bulletAttack = attack as BulletAttack;
 
 
-        if (hitBarricadeParts.Contains(cash)||4 < (int)bulletAttack.GetGunType()) barricadeParts[cash].SetActive(false);
+        if (hitBarricadeParts.Contains(cash) || 4 < (int)bulletAttack.GetGunType())
+        { 
+            barricadeParts[cash].SetActive(false);
+            CheckSupport();
+        }
+
         hitBarricadeParts.Add(cash);
 
         CheckHp(bulletAttack.GetGunType());
@@ -146,6 +155,36 @@ public class Barricade : HitObject
         if(hideObject>=MAX_HIDE_PARTS) Break();
     }
 
+    private void CheckSupport() 
+    {
+        for (int i = 0; i < barricadeParts.Count; i++)
+        {
+            //バリケードの中央のパーツ以外を無視
+            if ((i + 1) % PARTS_WIDE != 2) continue;
+
+            int support = 4;
+
+            if (barricadeParts[i - 1].activeSelf == false &&
+                barricadeParts[i + 1].activeSelf == false)
+                support -= 2;
+
+            if (i < PARTS_WIDE || !barricadeParts[i - PARTS_WIDE].activeSelf)
+                support--;
+            if (i > barricadeParts.Count-PARTS_WIDE || !barricadeParts[i + PARTS_WIDE].activeSelf)
+                support--;
+
+            if (support > 0) continue;
+
+            barricadeParts[i].SetActive(false);
+
+        }
+
+
+
+
+
+    }
+
 
 
     /// <summary>
@@ -171,6 +210,8 @@ public class Barricade : HitObject
         }
         hitBarricadeParts.Clear();
     }
+
+
 
 
 

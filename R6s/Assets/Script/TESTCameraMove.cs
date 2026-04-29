@@ -11,7 +11,7 @@ public class TESTCameraMove : MonoBehaviour
     {
         mousePos = Input.mousePosition;
         Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
