@@ -10,6 +10,7 @@ public class AttackObjects : ScriptableObject
     {
         None = -1,
         Bullet,
+        FinalBlow,
         Max,
 
 

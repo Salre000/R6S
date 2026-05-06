@@ -13,6 +13,7 @@ public class Barricade : HitObject
 
     private List<int> hitBarricadeParts= new List<int>();
 
+    private List<int> attackIds= new List<int>();
     private int hp = 100;
 
     private readonly int MAX_HP = 100;
@@ -26,11 +27,12 @@ public class Barricade : HitObject
     private readonly int PARTS_WIDE=3;
     private readonly int PARTS_HEIGHT =14;
 
-
     public Barricade(GameObject barricade) 
     {
 
         Rigidbody rigidbody = barricade.AddComponent<Rigidbody>();
+
+
 
         rigidbody.useGravity = false;
 
@@ -53,6 +55,10 @@ public class Barricade : HitObject
                 });
         }
 
+        int id=HitObjectManager.instance.SetHitObject(this);
+
+        SetHitID(id);
+
     }
     public override void HitAction(int attackID)
     {
@@ -66,13 +72,26 @@ public class Barricade : HitObject
 
     }
 
+
+    public override void Update()
+    {
+        base.Update();
+        CheckUniqueAttackID();
+
+    }
+
     private void HitObjectAction(GameObject gameObject,int cash) 
     {
         Attack attack = AttackObjectManager.instance.GetAttack(gameObject);
 
+        
         if (attack == null) return;
 
+        CheckFinalBlow(attack, barricadeParts[cash]);
+
         BulletAttack bulletAttack = attack as BulletAttack;
+
+        if (bulletAttack == null) return;
 
 
         if (hitBarricadeParts.Contains(cash) || 4 < (int)bulletAttack.GetGunType())
@@ -185,6 +204,45 @@ public class Barricade : HitObject
 
     }
 
+    private void CheckFinalBlow(Attack attack,GameObject partsObject) 
+    {
+        FinalBlow finalBlow = attack as FinalBlow;
+
+        if (finalBlow == null) return;
+
+        partsObject.SetActive(false);
+
+        attackIds.Add(attack.GetAttackID());
+
+    }
+
+    private void CheckUniqueAttackID()
+    {
+        if (attackIds.Count == 0) return;
+
+        int count = 0;
+        List<int> duplicate=new List<int>();
+        for (int i = 0; i < attackIds.Count; i++) 
+        {
+            if (duplicate.Contains(i)) continue;
+
+            for(int j=0;j< attackIds.Count; j++) 
+            {
+                if (i == j) continue;
+                if (attackIds[i] != attackIds[j]) continue;
+
+                duplicate.Add(j);
+
+            }
+
+            count++;
+        }
+
+        attackIds.Clear();
+
+        hitCount -= count;
+
+    }
 
 
     /// <summary>

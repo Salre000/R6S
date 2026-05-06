@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TESTCameraMove : MonoBehaviour
+public class TestCameraMove : MonoBehaviour
 {
     private Vector3 mousePos = Vector3.zero;
 
@@ -40,7 +40,8 @@ public class TESTCameraMove : MonoBehaviour
 
     }
 
-    private void Move() 
+
+    private void Move()
     {
         Vector3 vector = transform.position;
 
@@ -49,8 +50,8 @@ public class TESTCameraMove : MonoBehaviour
         if (Input.GetKey(KeyCode.S)) vector -= transform.forward / 30;
         if (Input.GetKey(KeyCode.D)) vector += transform.right / 30;
 
-        if (Input.GetKey(KeyCode.Space)) vector.y +=1f/ 30;
-        if (Input.GetKey(KeyCode.LeftControl)) vector.y -= 1f/ 30;
+        if (Input.GetKey(KeyCode.Space)) vector.y += 1f / 30;
+        if (Input.GetKey(KeyCode.LeftControl)) vector.y -= 1f / 30;
         if (Input.GetKey(KeyCode.L)) Cursor.lockState = CursorLockMode.None;
 
 
@@ -60,10 +61,10 @@ public class TESTCameraMove : MonoBehaviour
     }
 
 
-    private void MouseLimit() 
+    private void MouseLimit()
     {
 
 
-    } 
+    }
 
 }

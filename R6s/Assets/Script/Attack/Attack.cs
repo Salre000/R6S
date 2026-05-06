@@ -49,7 +49,7 @@ public class Attack
 
     public virtual void Remove()
     {
-
+        AttackObjectManager.instance.RemoveAttack(attackID);
     }
 
 

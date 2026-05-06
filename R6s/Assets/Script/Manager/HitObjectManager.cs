@@ -12,7 +12,11 @@ public class HitObjectManager : MonoBehaviour
     {
         instance = this;
     }
-    public int SetHitObject(HitObject attack)
+    public void Update()
+    {
+        HitObjectUPDate();
+    }
+    public int SetHitObject(HitObject hitObject)
     {
         int ID = -1;
         for (int i = 0; i < hitObjects.Count; i++)
@@ -20,13 +24,22 @@ public class HitObjectManager : MonoBehaviour
             if (hitObjects[i] != null) continue;
 
             ID = i;
-            hitObjects[ID] = attack;
+            hitObjects[ID] = hitObject;
             return ID;
         }
 
-        hitObjects.Add(attack);
+        hitObjects.Add(hitObject);
 
         return hitObjects.Count - 1;
+    }
+    public void RemoveHitObject(int hitObjectID) { hitObjects[hitObjectID] = null; }
+
+    public void HitObjectUPDate()
+    {
+        if (hitObjects.Count < 1) return;
+        for (int i = 0; i < hitObjects.Count; i++)
+            if (hitObjects[i] != null) hitObjects[i].Update();
+
     }
 
     public HitObject GetHitObject(int id) { return hitObjects[id]; }

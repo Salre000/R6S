@@ -49,6 +49,7 @@ public class BulletAttack : ObjectAttack
     }
     public override void Update()
     {
+        base.Update();
 
         attackObject.transform.position += angle;
 
