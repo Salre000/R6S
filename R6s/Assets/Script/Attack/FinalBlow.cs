@@ -7,9 +7,7 @@ public class FinalBlow : ObjectAttack
 {
     private float time = 0;
     private readonly float MaxTime = 1;
-
-    private readonly float range = 3; 
-    public FinalBlow(Vector3 pos,float range) 
+    public FinalBlow(Vector3 pos, float range)
     {
         GameObject bullet = GameObject.Instantiate
     (
@@ -20,7 +18,7 @@ public class FinalBlow : ObjectAttack
         bullet.transform.localScale = new Vector3(range, range, range);
 
 
-        triggerDetector=bullet.AddComponent<TriggerDetector>();
+        triggerDetector = bullet.AddComponent<TriggerDetector>();
 
         attackObject = bullet;
 
@@ -29,6 +27,7 @@ public class FinalBlow : ObjectAttack
 
         triggerDetector.SetHitAction(HitAction);
 
+        SetAttributeID(AttackAttribute.attackAttribute.finalBlow);
 
 
     }
@@ -37,6 +36,9 @@ public class FinalBlow : ObjectAttack
 
     public override void HitAction(GameObject hitObject, Vector3 hitPos)
     {
+
+        base.HitAction(hitObject, hitPos);
+
         //‹ó”’
 
         Debug.Log("Hit");

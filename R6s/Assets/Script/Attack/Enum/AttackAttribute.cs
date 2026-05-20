@@ -9,6 +9,7 @@ public class AttackAttribute
     {
         None = -1,
         bullet,
+        finalBlow,
         explosion,
         Max
     }

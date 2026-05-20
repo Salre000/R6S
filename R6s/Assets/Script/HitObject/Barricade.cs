@@ -11,9 +11,9 @@ public class Barricade : HitObject
 
     private readonly string hitObjectTag = "HItObject";
 
-    private List<int> hitBarricadeParts= new List<int>();
+    private List<int> hitBarricadeParts = new List<int>();
 
-    private List<int> attackIds= new List<int>();
+    private List<int> attackIds = new List<int>();
     private int hp = 100;
 
     private readonly int MAX_HP = 100;
@@ -24,10 +24,13 @@ public class Barricade : HitObject
 
     private readonly int MAX_HIDE_PARTS = 14;
 
-    private readonly int PARTS_WIDE=3;
-    private readonly int PARTS_HEIGHT =14;
+    private readonly int PARTS_WIDE = 3;
+    private readonly int PARTS_HEIGHT = 14;
 
-    public Barricade(GameObject barricade) 
+    private readonly int OvercomeRate = 16;
+    private  int blowCount = 0;
+
+    public Barricade(GameObject barricade)
     {
 
         Rigidbody rigidbody = barricade.AddComponent<Rigidbody>();
@@ -36,37 +39,49 @@ public class Barricade : HitObject
 
         rigidbody.useGravity = false;
 
-        for (int i=0;i< barricade.transform.childCount;i++) 
+        for (int i = 0; i < barricade.transform.childCount; i++)
         {
             if (barricade.transform.GetChild(i).tag != hitObjectTag) continue;
 
             barricadeParts.Add(barricade.transform.GetChild(i).gameObject);
         }
 
-        for(int i=0;i< barricadeParts.Count; i++) 
+        for (int i = 0; i < barricadeParts.Count; i++)
         {
             int cash = i;
             BoxCollider box = barricadeParts[i].AddComponent<BoxCollider>();
             box.isTrigger = true;
             barricadeParts[i].AddComponent<TriggerDetector>().SetHitAction
-                ((gameObject, Pos) => 
+                ((gameObject, Pos) =>
                 {
-                    HitObjectAction(gameObject,cash);
+                    HitObjectAction(gameObject, cash);
                 });
         }
 
-        int id=HitObjectManager.instance.SetHitObject(this);
+        int id = HitObjectManager.instance.SetHitObject(this);
 
         SetHitID(id);
+
+        SetHitObject(barricade);
 
     }
     public override void HitAction(int attackID)
     {
 
-        Attack attack =AttackObjectManager.instance.GetAttack(attackID);
+        Attack attack = AttackObjectManager.instance.GetAttack(attackID);
 
         // 爆発属性以外を無視する
-        if (attack.GetAttributeID() != AttackAttribute.attackAttribute.explosion) return;
+        if ((int)attack.GetAttributeID() <= (int)AttackAttribute.attackAttribute.bullet) return;
+
+        if (attack.GetAttributeID() == AttackAttribute.attackAttribute.finalBlow)
+        {
+            hp -= 34;
+            if (hp <= 0) Break();
+            blowCount++;
+
+            return;
+
+        }
 
         Break();
 
@@ -80,11 +95,11 @@ public class Barricade : HitObject
 
     }
 
-    private void HitObjectAction(GameObject gameObject,int cash) 
+    private void HitObjectAction(GameObject gameObject, int cash)
     {
         Attack attack = AttackObjectManager.instance.GetAttack(gameObject);
 
-        
+
         if (attack == null) return;
 
         CheckFinalBlow(attack, barricadeParts[cash]);
@@ -95,7 +110,8 @@ public class Barricade : HitObject
 
 
         if (hitBarricadeParts.Contains(cash) || 4 < (int)bulletAttack.GetGunType())
-        { 
+        {
+
             barricadeParts[cash].SetActive(false);
             CheckSupport();
         }
@@ -110,18 +126,17 @@ public class Barricade : HitObject
     /// <summary>
     ///  バリケードのHpを確認する関数
     /// </summary>
-    private void CheckHp(BulletAttack.GunType gunType) 
+    private void CheckHp(BulletAttack.GunType gunType)
     {
         hitCount++;
-        if(hitCount>=MAX_HIT_COUNT) { Break();return;}
+        if (hitCount >= MAX_HIT_COUNT) { Break(); return; }
 
         hp -= GunTypeDamage(gunType);
-
         if (hp <= 0) Break();
 
     }
 
-    private int GunTypeDamage(BulletAttack.GunType gunType) 
+    private int GunTypeDamage(BulletAttack.GunType gunType)
     {
         int Damage = 0;
 
@@ -158,11 +173,11 @@ public class Barricade : HitObject
 
     }
 
-    private void CheckPartsActive() 
+    private void CheckPartsActive()
     {
         int hideObject = 0;
 
-        for (int i=0;i< barricadeParts.Count; i++) 
+        for (int i = 0; i < barricadeParts.Count; i++)
         {
             if (barricadeParts[i].activeSelf) continue;
 
@@ -171,10 +186,10 @@ public class Barricade : HitObject
 
         }
 
-        if(hideObject>=MAX_HIDE_PARTS) Break();
+        if (hideObject >= MAX_HIDE_PARTS) Break();
     }
 
-    private void CheckSupport() 
+    private void CheckSupport()
     {
         for (int i = 0; i < barricadeParts.Count; i++)
         {
@@ -189,7 +204,7 @@ public class Barricade : HitObject
 
             if (i < PARTS_WIDE || !barricadeParts[i - PARTS_WIDE].activeSelf)
                 support--;
-            if (i > barricadeParts.Count-PARTS_WIDE || !barricadeParts[i + PARTS_WIDE].activeSelf)
+            if (i > barricadeParts.Count - PARTS_WIDE || !barricadeParts[i + PARTS_WIDE].activeSelf)
                 support--;
 
             if (support > 0) continue;
@@ -204,7 +219,7 @@ public class Barricade : HitObject
 
     }
 
-    private void CheckFinalBlow(Attack attack,GameObject partsObject) 
+    private void CheckFinalBlow(Attack attack, GameObject partsObject)
     {
         FinalBlow finalBlow = attack as FinalBlow;
 
@@ -214,6 +229,10 @@ public class Barricade : HitObject
 
         attackIds.Add(attack.GetAttackID());
 
+        CheckSupport();
+
+        CheckPartsActive();
+
     }
 
     private void CheckUniqueAttackID()
@@ -221,12 +240,12 @@ public class Barricade : HitObject
         if (attackIds.Count == 0) return;
 
         int count = 0;
-        List<int> duplicate=new List<int>();
-        for (int i = 0; i < attackIds.Count; i++) 
+        List<int> duplicate = new List<int>();
+        for (int i = 0; i < attackIds.Count; i++)
         {
             if (duplicate.Contains(i)) continue;
 
-            for(int j=0;j< attackIds.Count; j++) 
+            for (int j = 0; j < attackIds.Count; j++)
             {
                 if (i == j) continue;
                 if (attackIds[i] != attackIds[j]) continue;
@@ -248,27 +267,50 @@ public class Barricade : HitObject
     /// <summary>
     /// バリケードの復活関数
     /// </summary>
-    public void Reboot() 
+    public void Reboot()
     {
-        for(int i=0;i< barricadeParts.Count; i++)
+        Debug.Log("" + GetOvercome());
+        for (int i = 0; i < barricadeParts.Count; i++)
         {
             barricadeParts[i].SetActive(true);
         }
 
+
+
         hp = MAX_HP;
         hitCount = 0;
+        blowCount = 0;
 
         hitBarricadeParts.Clear();
     }
-    public void Break() 
+
+    public void Break()
     {
-        for(int i=0;i< barricadeParts.Count; i++)
+        for (int i = 0; i < barricadeParts.Count; i++)
         {
             barricadeParts[i].SetActive(false);
         }
         hitBarricadeParts.Clear();
     }
 
+    public bool GetOvercome() 
+    {
+        int hideObject = 0;
+
+        for (int i = 0; i < barricadeParts.Count; i++)
+        {
+            if (barricadeParts[i].activeSelf) continue;
+
+            hideObject++;
+        }
+
+        float reta = (float)hideObject / (PARTS_WIDE * PARTS_HEIGHT);
+
+        Debug.Log(reta * 100);
+
+        return (reta*100) >= OvercomeRate||blowCount>=2;
+
+    }
 
 
 

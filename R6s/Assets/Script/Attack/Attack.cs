@@ -53,7 +53,16 @@ public class Attack
     }
 
 
-    public virtual void HitAction(GameObject hitObject,Vector3 hitPos) { } 
+    public virtual void HitAction(GameObject hitObject,Vector3 hitPos) 
+    {
+        HitObject hit = HitObjectManager.instance.GetHitObject(hitObject);
+
+        if (hit == null) return;
+
+        SetHitPos(hitPos);
+
+        hit.HitAction(attackID);
+    } 
 
 
     #region SetGet

@@ -38,13 +38,7 @@ public class BulletAttack : ObjectAttack
     }
     public override void HitAction(GameObject hitObject, Vector3 hitPos)
     {
-        HitObject hit = HitObjectManager.instance.GetHitObject(hitObject);
-
-        if (hit == null) return;
-
-        Debug.Log("“–‚½‚Á‚½");
-
-        hit.HitAction(attackID);
+        base.HitAction(hitObject, hitPos);
 
     }
     public override void Update()

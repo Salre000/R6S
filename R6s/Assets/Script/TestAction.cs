@@ -6,6 +6,7 @@ using UnityEngine;
 public class TestAction : MonoBehaviour
 {
     public GameObject barricade;
+    public GameObject wall;
 
     public BulletAttack.GunType gunType = BulletAttack.GunType.CSRX300;
 
@@ -77,6 +78,7 @@ public class TestAction : MonoBehaviour
     private void CreateBarricade()
     {
         Barricade barricade = new Barricade(this.barricade);
+        Wall w= new Wall(wall);
 
         action = barricade.Reboot;
     }

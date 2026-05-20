@@ -18,11 +18,6 @@ public class HitObject
 
     public virtual void HitAction(int attackID) 
     {
-
-
-        
-
-
     }
 
 
