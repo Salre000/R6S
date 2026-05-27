@@ -9,6 +9,20 @@ using UnityEngine;
 public static class Extra
 {
 
+    public class Line 
+    {
+        public Line(Vector2 _start,Vector2 _end) 
+        {
+            start = _start;
+            end = _end;
+        }
+
+        public Vector2 start = Vector2.zero;
+        public Vector2 end = Vector2.zero;
+    }
+
+
+
     /// <summary>
     /// 拡張関数
     /// </summary>
@@ -234,4 +248,152 @@ public static class Extra
 
     }
 
+    /// <summary>
+    /// 全部がゼロの時だけ　true　を返す
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <returns></returns>
+    public static bool CheckZeroVector3(this Vector3 vector) 
+    {
+        if(vector.x!=0)return false;
+        if(vector.y!=0)return false;
+        if(vector.z!=0)return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// 線と線の交点
+    /// </summary>
+    /// <param name="a1"></param>
+    /// <param name="a2"></param>
+    /// <param name="b1"></param>
+    /// <param name="b2"></param>
+    /// <param name="intersection"></param>
+    /// <returns></returns>
+    public static Vector3 LineIntersection(
+    Vector2 a1,
+    Vector2 a2,
+    Vector2 b1,
+    Vector2 b2
+    )
+    {
+        Vector3 intersection = Vector2.zero;
+
+        Vector2 r = a2 - a1;
+        Vector2 s = b2 - b1;
+
+        float cross =
+            r.x * s.y - r.y * s.x;
+
+        // 平行
+        if (Mathf.Abs(cross) < 0.0001f)
+            return Vector3.zero;
+
+        Vector2 diff = b1 - a1;
+
+        float t =
+            (diff.x * s.y - diff.y * s.x)
+            / cross;
+
+        float u =
+            (diff.x * r.y - diff.y * r.x)
+            / cross;
+
+        // 線分内判定
+        if (t < 0 || t > 1 ||
+            u < 0 || u > 1)
+            return Vector3.zero;
+
+        intersection =
+            a1 + r * t;
+
+        return intersection;
+    }
+
+    public static Vector3 LineIntersections(List<Line> lines,Line line) 
+    {
+        Vector3 intersection = Vector3.zero;
+
+        for(int i=0;i< lines.Count; i++) 
+        {
+            if (line.start == lines[i].start || line.end == lines[i].end
+                || line.start == lines[i].end|| lines[i].start== line.end) continue;
+
+            intersection = LineIntersection(line.start, line.end, lines[i].start, lines[i].end);
+
+
+            if (intersection.CheckZeroVector3()) continue;
+
+            return intersection;
+        }
+        return intersection;
+
+    }
+
+
+    /// <summary>
+    /// 複数座標の中央の座標
+    /// </summary>
+    /// <param name="points"></param>
+    /// <returns></returns>
+    public static Vector3 GetCenter(List<Vector3> points)
+    {
+        Vector3 center = Vector3.zero;
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            center += points[i];
+        }
+
+        center /= points.Count;
+
+        return center;
+    }
+
+    /// <summary>
+    /// 線と点の最短距離
+    /// </summary>
+    /// <param name="point"></param>
+    /// <param name="lineStart"></param>
+    /// <param name="lineEnd"></param>
+    /// <returns></returns>
+    public static float DistancePointToLine(
+    Vector3 point,
+    Vector3 lineStart,
+    Vector3 lineEnd)
+    {
+        Vector3 line =
+            lineEnd - lineStart;
+
+        float length =
+            line.sqrMagnitude;
+
+        // 線分長0対策
+        if (length == 0)
+        {
+            return Vector3.Distance(
+                point,
+                lineStart);
+        }
+
+        // 射影
+        float t =
+            Vector3.Dot(
+                point - lineStart,
+                line)
+            / length;
+
+        // 線分内に制限
+        t = Mathf.Clamp01(t);
+
+        // 最近点
+        Vector3 closest =
+            lineStart + line * t;
+
+        // 距離
+        return Vector3.Distance(
+            point,
+            closest);
+    }
 }

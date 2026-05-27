@@ -10,11 +10,10 @@ public class DebugTEST : MonoBehaviour
     public List<GameObject> gameMesh;
     public GameObject debugObject;
     // Start is called before the first frame update
-    void Start()
+    public void Awake()
     {
         Instance = this;
     }
-
 
     public void ShowDebugObject(Vector3 pos, string name = "Debug")
     {
